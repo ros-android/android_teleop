@@ -1,34 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="compile-apps" name="appman_android">
+<project basedir="." default="compile" name="appman_android">
   
   <property file="ros.properties"/>
-
-  <property environment="env"/>
-  <property name="target" value="1.6"/>
-  <property name="source" value="1.6"/>
-
-  <!-- directories -->
-  <property name="pwd" location="."/>
-
-  <target name="init">
-  </target>
-
-  <target name="clean">    
-    <ant dir="apps" target="clean"/>
-  </target>
-
-  <target name="compile" depends="init">
-  </target>
-    
-  <target name="compile-apps" depends="compile">
-    <ant dir="apps" target="compile"/>
-  </target>
-
-  <target name="debug-apps" depends="compile">
-    <ant dir="apps" target="debug"/>
-  </target>
-
-  <target name="install-apps" depends="compile">
-    <ant dir="apps" target="install"/>
-  </target>
+  <import file="${ros.pkg.appmanandroid.dir}/build_app.xml" />
 </project>
