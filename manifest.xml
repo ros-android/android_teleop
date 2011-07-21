@@ -32,6 +32,7 @@
   <depend package="map_store" />
 
   <export>
+    <rosjava-android-app />
     <rosjava-src location="library/src" />
     <rosjava-android path="library" />
   </export>
