@@ -44,12 +44,13 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import org.ros.Node;
-import org.ros.Publisher;
-import org.ros.ServiceResponseListener;
-import org.ros.Subscriber;
-import org.ros.exception.RosInitException;
-import org.ros.ServiceClient;
+import org.ros.node.Node;
+import org.ros.node.topic.Publisher;
+import org.ros.node.service.ServiceResponseListener;
+import org.ros.node.topic.Subscriber;
+import org.ros.exception.RosException;
+import org.ros.exception.RemoteException;
+import org.ros.node.service.ServiceClient;
 import org.ros.internal.node.service.ServiceIdentifier;
 import org.ros.message.Message;
 import org.ros.message.app_manager.AppStatus;
@@ -165,7 +166,7 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
       NameResolver appNamespace = getAppNamespace(node);
       cameraView = (SensorImageView) findViewById(R.id.image);
       Log.i("Teleop", "init cameraView");
-      cameraView.start(node, appNamespace.resolve(cameraTopic));
+      cameraView.start(node, appNamespace.resolve(cameraTopic).toString());
       cameraView.post(new Runnable() {
 
         @Override
@@ -174,9 +175,9 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
         }
       });
       Log.i("Teleop", "init twistPub");
-      twistPub = node.createPublisher(baseControlTopic, "geometry_msgs/Twist");
+      twistPub = node.newPublisher(baseControlTopic, "geometry_msgs/Twist");
       createPublisherThread(twistPub, touchCmdMessage, 10);
-    } catch (RosInitException e) {
+    } catch (RosException e) {
       Log.e("Teleop", "initRos() caught exception: " + e.toString() + ", message = " + e.getMessage());
     }
   }
@@ -194,7 +195,7 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
     try {
       dashboard.start(node);
       startApp();
-    } catch (RosInitException ex) {
+    } catch (RosException ex) {
       Toast.makeText(Teleop.this, "Failed: " + ex.getMessage(), Toast.LENGTH_LONG).show();
     }
   }
@@ -213,7 +214,7 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
           }
 
           @Override
-          public void onFailure(Exception e) {
+          public void onFailure(RemoteException e) {
             safeToastStatus("Failed: " + e.getMessage());
           }
         });
