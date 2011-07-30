@@ -159,29 +159,6 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
     pubThread.start();
   }
 
-  private void initRos() {
-    try {
-      Log.i("Teleop", "getNode()");
-      Node node = getNode();
-      NameResolver appNamespace = getAppNamespace(node);
-      cameraView = (SensorImageView) findViewById(R.id.image);
-      Log.i("Teleop", "init cameraView");
-      cameraView.start(node, appNamespace.resolve(cameraTopic).toString());
-      cameraView.post(new Runnable() {
-
-        @Override
-        public void run() {
-          cameraView.setSelected(true);
-        }
-      });
-      Log.i("Teleop", "init twistPub");
-      twistPub = node.newPublisher(baseControlTopic, "geometry_msgs/Twist");
-      createPublisherThread(twistPub, touchCmdMessage, 10);
-    } catch (RosException e) {
-      Log.e("Teleop", "initRos() caught exception: " + e.toString() + ", message = " + e.getMessage());
-    }
-  }
-
   @Override
   protected void onResume() {
     super.onResume();
@@ -195,6 +172,18 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
     try {
       dashboard.start(node);
       startApp();
+      NameResolver appNamespace = getAppNamespace(node);
+      cameraView = (SensorImageView) findViewById(R.id.image);
+      Log.i("Teleop", "init cameraView");
+      cameraView.start(node, appNamespace.resolve(cameraTopic).toString());
+      cameraView.post(new Runnable() {
+        @Override
+        public void run() {
+          cameraView.setSelected(true);
+        }});
+      Log.i("Teleop", "init twistPub");
+      twistPub = node.newPublisher(baseControlTopic, "geometry_msgs/Twist");
+      createPublisherThread(twistPub, touchCmdMessage, 10);
     } catch (RosException ex) {
       Toast.makeText(Teleop.this, "Failed: " + ex.getMessage(), Toast.LENGTH_LONG).show();
     }
@@ -205,12 +194,6 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
         new ServiceResponseListener<StartApp.Response>() {
           @Override
           public void onSuccess(StartApp.Response message) {
-            initRos();
-            // TODO(kwc): add status code for app already running
-            /*
-             * if (message.started) { safeToastStatus("started"); initRos(); }
-             * else { safeToastStatus(message.message); }
-             */
           }
 
           @Override
