@@ -60,7 +60,6 @@ import org.ros.service.app_manager.StartApp;
 import ros.android.activity.AppManager;
 import ros.android.activity.RosAppActivity;
 import ros.android.views.SensorImageView;
-import ros.android.util.Dashboard;
 import android.widget.LinearLayout;
 
 /**
@@ -74,7 +73,6 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
   private float motionY;
   private float motionX;
   private Subscriber<AppStatus> statusSub;
-  private Dashboard dashboard;
   private String robotAppName;
   private String baseControlTopic;
   private String cameraTopic;
@@ -82,16 +80,10 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
   /** Called when the activity is first created. */
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    setDefaultAppName("turtlebot_teleop/android_teleop");
+    setDashboardResource(R.id.top_bar);
+    setMainWindowResource(R.layout.main);
     super.onCreate(savedInstanceState);
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-        WindowManager.LayoutParams.FLAG_FULLSCREEN);
-    setContentView(R.layout.main);
-
-    robotAppName = getIntent().getStringExtra(AppManager.PACKAGE + ".robot_app_name");
-    if( robotAppName == null ) {
-      robotAppName = "turtlebot_teleop/android_teleop";
-    }
 
     if (getIntent().hasExtra("base_control_topic")) {
       baseControlTopic = getIntent().getStringExtra("base_control_topic");
@@ -111,16 +103,10 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
     cameraView = (SensorImageView) findViewById(R.id.image);
     // cameraView.setOnTouchListener(this);
     touchCmdMessage = new Twist();
-
-    dashboard = new Dashboard(this);
-    dashboard.setView((LinearLayout)findViewById(R.id.top_bar),
-                      new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 
-                                                    LinearLayout.LayoutParams.WRAP_CONTENT));
   }
 
   @Override
   protected void onNodeDestroy(Node node) {
-    dashboard.stop();
     if (twistPub != null) {
       twistPub.shutdown();
       twistPub = null;
@@ -170,8 +156,6 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
     Log.i("Teleop", "startAppFuture");
     super.onNodeCreate(node);
     try {
-      dashboard.start(node);
-      startApp();
       NameResolver appNamespace = getAppNamespace(node);
       cameraView = (SensorImageView) findViewById(R.id.image);
       Log.i("Teleop", "init cameraView");
@@ -187,20 +171,6 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
     } catch (RosException ex) {
       Toast.makeText(Teleop.this, "Failed: " + ex.getMessage(), Toast.LENGTH_LONG).show();
     }
-  }
-
-  private void startApp() {
-    appManager.startApp(robotAppName,
-        new ServiceResponseListener<StartApp.Response>() {
-          @Override
-          public void onSuccess(StartApp.Response message) {
-          }
-
-          @Override
-          public void onFailure(RemoteException e) {
-            safeToastStatus("Failed: " + e.getMessage());
-          }
-        });
   }
 
   @Override
@@ -244,14 +214,5 @@ public class Teleop extends RosAppActivity implements OnTouchListener {
       touchCmdMessage.angular.z = 0;
     }
     return true;
-  }
-
-  private void safeToastStatus(final String message) {
-    runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        Toast.makeText(Teleop.this, message, Toast.LENGTH_SHORT).show();
-      }
-    });
   }
 }
