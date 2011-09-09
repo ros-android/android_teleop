@@ -4,8 +4,7 @@
               android:layout_width="fill_parent"
               android:layout_height="wrap_content"
               android:padding="10dp"
-              android:gravity="center"
-              >
+              android:gravity="center">
   <TextView android:text="Enter a name for this map:"
             android:layout_width="400sp"
             android:layout_height="wrap_content"/>
