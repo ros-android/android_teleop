@@ -28,6 +28,7 @@
 				      android:gravity="bottom"
 				      android:src="@drawable/joystick_white"
 				      android:id="@+id/joystick"/>
+				
     </LinearLayout>
   </LinearLayout>
 </LinearLayout>
