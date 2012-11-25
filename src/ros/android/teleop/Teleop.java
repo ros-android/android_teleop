@@ -28,20 +28,21 @@
  */
 package ros.android.teleop;
 
+import org.ros.exception.RosException;
+import org.ros.namespace.NameResolver;
+import org.ros.node.ConnectedNode;
+import org.ros.node.Node;
+
+import ros.android.activity.RosAppActivity;
+import ros.android.views.JoystickView;
+import ros.android.views.SensorImageView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-import org.ros.node.Node;
-import org.ros.node.topic.Subscriber;
-import org.ros.exception.RosException;
-import org.ros.namespace.NameResolver;
-import ros.android.activity.RosAppActivity;
-import ros.android.views.SensorImageView;
-import ros.android.views.JoystickView;
+//import ros.android.activity.R;
 
 /**
  * @author kwc@willowgarage.com (Ken Conley)
@@ -93,7 +94,7 @@ public class Teleop extends RosAppActivity {
   }
 
   @Override
-  protected void onNodeCreate(Node node) {
+  protected void onNodeCreate(ConnectedNode node) {
     Log.i("Teleop", "startAppFuture");
     super.onNodeCreate(node);
     try {
